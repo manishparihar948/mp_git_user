@@ -1,0 +1,29 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Run unit tests on iPhone 17 Pro (iOS 26.3.1)"
+  lane :test do
+    run_tests(
+      scheme: "MPGitUserShowCase",   # must match your Xcode scheme name
+      destination: "platform=iOS Simulator,id=7B154B5A-0CA4-4F0E-A3D4-760E4F38B2F3",  # iPhone 17 iOS 26.3.1
+      skip_testing: "MPGitUserShowCaseUITests",
+      clean: true,         # optional - ensures a fresh build
+      prelaunch_simulator: true, # Launch simulator befor tests
+      disable_concurrent_testing: true, # Disable parallel testing
+      max_concurrent_simulators: 1, # Only 1 simulator at a time
+      reset_simulator: true, # Reset simulator state
+      derived_data_path: "./DerivedData" # Use local derived data
+    )
+  end
+
+    desc "Build the MPGitUserShowCase app"
+    lane :build do
+    build_app(
+      scheme: "MPGitUserShowCase",
+      export_method: "development",
+      skip_codesigning: true,
+      skip_package_ipa: true   # ✅ prevents exportArchive step
+    )
+  end
+end
+
