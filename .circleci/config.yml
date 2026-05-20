@@ -1,0 +1,34 @@
+version: 2.1
+
+jobs:
+  build_and_test:
+    macos:
+      xcode: "26.3.0"
+    steps:
+      - checkout
+
+      - run:
+          name: Debug repo root
+          command: ls -la
+
+      - run:
+          name: Debug MPGitUserShowCase folder
+          command: ls -la MPGitUserShowCase
+
+      - run:
+          name: Install Bundler
+          command: gem install bundler:4.0.8
+
+      - run:
+          name: Install dependencies
+          command: cd MPGitUserShowCase && bundle install
+
+      - run:
+          name: Run Fastlane CI lane
+          command: cd MPGitUserShowCase && bundle exec fastlane ci
+
+workflows:
+  ci_pipeline:
+    jobs:
+      - build_and_test
+
