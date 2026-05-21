@@ -1,0 +1,6 @@
+Target dependency graph (3 targets)
+Target 'MPGitUserShowCaseUITests' in project 'MPGitUserShowCase'
+➜ Explicit dependency on target 'MPGitUserShowCase' in project 'MPGitUserShowCase'
+Target 'MPGitUserShowCaseTests' in project 'MPGitUserShowCase'
+➜ Explicit dependency on target 'MPGitUserShowCase' in project 'MPGitUserShowCase'
+Target 'MPGitUserShowCase' in project 'MPGitUserShowCase' (no dependencies)

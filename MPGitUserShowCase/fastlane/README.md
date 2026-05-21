@@ -31,6 +31,14 @@ Run unit tests on iPhone 17 Pro (iOS 26.3.1)
 
 Build the MPGitUserShowCase app
 
+### ios ci
+
+```sh
+[bundle exec] fastlane ios ci
+```
+
+CI lane that runs tests
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

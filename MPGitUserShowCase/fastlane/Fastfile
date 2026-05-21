@@ -5,7 +5,7 @@ platform :ios do
   lane :test do
     run_tests(
       scheme: "MPGitUserShowCase",   # must match your Xcode scheme name
-      project: "MPGitUserShowCase.xcodeproj", # 👈 add explicit project path
+      # project: "MPGitUserShowCase.xcodeproj", # 👈 add explicit project path
       destination: "platform=iOS Simulator,id=7B154B5A-0CA4-4F0E-A3D4-760E4F38B2F3",  # iPhone 17 iOS 26.3.1
       skip_testing: "MPGitUserShowCaseUITests",
       clean: true,         # optional - ensures a fresh build
@@ -21,16 +21,17 @@ platform :ios do
     lane :build do
     build_app(
       scheme: "MPGitUserShowCase",
-      project: "MPGitUserShowCase.xcodeproj", # 👈 add explicit project path
       export_method: "development",
+      # project: "MPGitUserShowCase.xcodeproj", # 👈 add explicit project path
       skip_codesigning: true,
       skip_package_ipa: true   # ✅ prevents exportArchive step
     )
   end
 
-  desc "CI lane that runs tests"
+  desc "Run tests and then build (CI lane)"
   lane:ci do
     test
+    build
   end
 end
 

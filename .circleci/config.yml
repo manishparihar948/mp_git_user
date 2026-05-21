@@ -3,6 +3,7 @@ version: 2.1
 jobs:
   build_and_test:
     macos:
+      # Use a valid CircleCI macOS image with Xcode installed
       xcode: "26.3.0"
     steps:
       - checkout
