@@ -22,6 +22,9 @@ jobs:
       - run:
           name: Run Fastlane Simulator Tests
           command: cd MPGitUserShowCase/fastlane && bundle exec fastlane simulator_test
+      - store_artifacts:
+          path: MPGitUserShowCase/fastlane/test_output
+          destination: test_output
 
 workflows:
   version: 2
