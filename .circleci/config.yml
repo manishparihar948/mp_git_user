@@ -18,7 +18,7 @@ jobs:
           command: gem install bundler -v 4.0.8
       - run:
           name: Install Dependencies
-          command: cd MPGitUserShowCase && bundle install --path vendor/bundle
+          command: cd MPGitUserShowCase && bundle install
       - run:
           name: Run Fastlane Simulator Tests
           command: cd MPGitUserShowCase && bundle exec fastlane simulator_test
