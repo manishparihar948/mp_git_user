@@ -1,6 +1,11 @@
+# fastlane/Fastfile
 default_platform(:ios)
 
 platform :ios do
+  before_all do
+    setup_circle_ci
+  end
+
   desc "Run unit tests on iPhone 17 Pro (iOS 26.3.1)"
   lane :test do
     run_tests(
@@ -26,6 +31,12 @@ platform :ios do
       skip_codesigning: true,
       skip_package_ipa: true   # ✅ prevents exportArchive step
     )
+  end
+
+  desc "Ad-hoc build"
+  lane :adhoc do
+    match(type: "adhoc")
+    gym(export_method: "ad-hoc")
   end
 
   desc "Run tests and then build (CI lane)"

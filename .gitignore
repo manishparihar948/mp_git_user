@@ -32,6 +32,10 @@ playground.xcworkspace
 .build/
 
 # CocoaPods
+
+# Ignore Xcode DerivedData
+MPGitUserShowCase/DerivedData/
+
 #
 # We recommend against adding the Pods directory to your .gitignore. However
 # you should judge for yourself, the pros and cons are mentioned at:
