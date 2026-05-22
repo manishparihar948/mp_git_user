@@ -21,7 +21,7 @@ jobs:
           command: cd MPGitUserShowCase && bundle install
       - run:
           name: Run Fastlane Simulator Tests
-          command: cd MPGitUserShowCase && bundle exec fastlane simulator_test
+          command: cd MPGitUserShowCase/fastlane && bundle exec fastlane simulator_test
 
 workflows:
   version: 2
