@@ -9,8 +9,13 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
+
+    @Environment(ThemeManager.self) private var themeManager: ThemeManager
+
+    @State private var showThemes = false
 
     var body: some View {
         /*
@@ -39,24 +44,49 @@ struct ContentView: View {
          Text("Select an item")
          }
          */
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
 
-            Text("Hello GitUser!")
-                .padding()
-                .onAppear {
-                    print("User Response")
-                    dump(
-                        try? StaticJSONMapper
-                            .decode(
-                                file: "StaticUserListData",
-                                type: UsersResponse.self)
-                    )
+        ZStack {
+
+            VStack {
+                Image(systemName: "globe")
+                    .imageScale(.large)
+                    .foregroundStyle(.tint)
+
+                Text("Hello GitUser!")
+                    .padding()
+                    .onAppear {
+                        print("User Response")
+                        dump(
+                            try? StaticJSONMapper
+                                .decode(
+                                    file: "StaticUserListData",
+                                    type: UsersResponse.self)
+                        )
+                    }
+                    .padding()
+
+            }
+            Spacer()
+            Rectangle().fill(themeManager.selectedTheme.gradient)
+            VStack {
+                Button("Show Themes") {
+                    showThemes.toggle()
                 }
-                .padding()
+                .font(.system(.headline,
+                              design: .rounded,
+                              weight: .bold))
+                .buttonStyle(.bordered)
+                .foregroundStyle(.white)
+                .controlSize(.large)
+                .buttonBorderShape(.roundedRectangle)
+            }
         }
+        .animation(.bouncy, value: themeManager.selectedTheme)
+        .ignoresSafeArea()
+        .sheet(isPresented: $showThemes, content: {
+            ThemeSwitcherView()
+                .presentationDetents([.medium])
+        })
     }
 
     /*
@@ -80,4 +110,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
         // .modelContainer(for: Item.self, inMemory: true)
+        .environment(ThemeManager())
+
 }

@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct MPGitUserShowCaseApp: App {
+    @State private var themeManager = ThemeManager()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -26,6 +28,7 @@ struct MPGitUserShowCaseApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(themeManager)
         }
         .modelContainer(sharedModelContainer)
     }
