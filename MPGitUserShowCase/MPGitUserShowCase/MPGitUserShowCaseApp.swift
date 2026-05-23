@@ -27,8 +27,9 @@ struct MPGitUserShowCaseApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(themeManager)
+            //ContentView()
+            //    .environment(themeManager)
+            UserScreen()
         }
         .modelContainer(sharedModelContainer)
     }
