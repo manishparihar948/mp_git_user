@@ -29,7 +29,7 @@ struct MPGitUserShowCaseApp: App {
         WindowGroup {
             //ContentView()
             //    .environment(themeManager)
-            UserScreen()
+            UserScreen(navigator: <#TabNavigator#>)
         }
         .modelContainer(sharedModelContainer)
     }
