@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - AppTab Definition
 enum AppTab: Hashable, CaseIterable {
-    case userscreen
+    case userscreen, setting
 }
 
 @Observable

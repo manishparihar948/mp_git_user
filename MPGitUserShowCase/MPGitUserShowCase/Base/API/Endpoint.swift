@@ -7,15 +7,14 @@
 
 import Foundation
 
-enum Endpoint {
-    case user
+enum Endpoint: Sendable {
+    case users
     case detailUser(id:Int)
 }
 
 extension Endpoint {
-    enum MethodType: Equatable {
-        case GET
-        case POST(data: Data?)
+    enum MethodType: Equatable, Sendable {
+        case get
     }
 }
 
@@ -24,7 +23,7 @@ extension Endpoint {
 
     var path : String {
         switch self {
-        case .user:
+        case .users:
             return "/users"
         case .detailUser(let id):
             return "/users/\(id)"
@@ -33,10 +32,10 @@ extension Endpoint {
 
     var methodType: MethodType {
         switch self {
-        case .user:
-             .GET
+        case .users:
+             .get
         case .detailUser(let data):
-             .GET
+             .get
         }
     }
 }

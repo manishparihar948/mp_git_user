@@ -8,9 +8,15 @@
 import SwiftUI
 import SwiftData
 
+enum CurrentScreen {
+    case gitUser, favourite
+}
+
 @main
 struct MPGitUserShowCaseApp: App {
     @State private var themeManager = ThemeManager()
+    @State private var currentScreen: CurrentScreen = .gitUser
+
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -27,10 +33,16 @@ struct MPGitUserShowCaseApp: App {
 
     var body: some Scene {
         WindowGroup {
-            //ContentView()
-            //    .environment(themeManager)
-            UserScreen(navigator: <#TabNavigator#>)
+            switch currentScreen {
+            case .gitUser:
+                //ContentView()
+                //    .environment(themeManager)
+                // UserScreen(navigator: <#TabNavigator#>)
+                MainScreen()
+            case .favourite:
+                EmptyView()
+            }
         }
-        .modelContainer(sharedModelContainer)
+        //.modelContainer(sharedModelContainer)
     }
 }

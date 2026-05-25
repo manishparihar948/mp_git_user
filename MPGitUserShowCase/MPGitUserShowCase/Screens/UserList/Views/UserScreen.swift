@@ -13,10 +13,12 @@ struct UserScreen: View {
 
     private let columns =  Array(repeating: GridItem(.flexible()),count: 2)
 
-    let users = Array(1...12)
+    // let users = Array(1...12)
+    var vm: UserViewModel
 
-    init(navigator: TabNavigator) {
+    init(navigator: TabNavigator, vm: UserViewModel) {
         self.navigator = navigator
+        self.vm = vm
     }
 
     var body: some View {
@@ -25,26 +27,50 @@ struct UserScreen: View {
 
         NavigationStack(path: $nav.path) {
             ZStack {
-                ScrollView {
-                    LazyVGrid(columns: columns, spacing: 16) {
-                        ForEach(users, id: \.self) { user in
-                            NavigationLink(value: user) {
-                                // UserItemView(user: user)
-                            }
-                        }
-                    }
-                    .navigationTitle("Git User Profile")
-                    .navigationDestination(for: Users.self) { user in
-                        // To Do - User Detail View Screen
-                        EmptyView()
-                    }
+                if vm.isLoading {
+                    ProgressView()
+                } else {
+                    galleryGridView
                 }
             }
+            .navigationTitle("Git User Profile")
+            .task {
+                await vm.fetchGitUsersList()
+            }
+            .alert(
+                "Something went wrong",
+                isPresented: .init(get: {vm.hasError}, set: {vm.hasError=$0})) {
+                    Button("Retry") {
+                        Task { await vm.fetchGitUsersList() }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text(vm.error?.errorDescription ?? "An unknown error occurred.")
+                }
         }
     }
 }
 
 // Extension
 private extension UserScreen {
-
+    var galleryGridView: some View {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(Array(vm.usersObject.enumerated()), id: \.element.id) { index, objImg in
+                    NavigationLink(value: objImg) {
+                        UserItemView(user: objImg)
+                    }
+                }
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if vm.isFetching {
+                ProgressView()
+            }
+        }
+        .navigationDestination(for: Users.self) { objImg in
+            // To Do - User Detail View Screen
+            EmptyView()
+        }
+    }
 }

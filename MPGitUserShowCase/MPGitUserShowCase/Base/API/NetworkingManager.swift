@@ -7,115 +7,94 @@
 
 import Foundation
 
-protocol NetworkingManagerImpl {
-    func authorizedRequest<T: Codable> (session:URLSession,
-                                        _ endpoint: Endpoint,
-                                        type: T.Type) async throws -> T
+@preconcurrency
+protocol NetworkingManagerImpl: Sendable {
+    func authorizedRequest<T: Codable> (_ endpoint: Endpoint) async throws -> T
 }
 
-final class NetworkingManager: NetworkingManagerImpl {
+final class NetworkingManager: NetworkingManagerImpl, Sendable {
 
-    static let shared = NetworkingManager()
+    nonisolated static let shared = NetworkingManager()
 
     private init() {}
 
+    private static let decoder: JSONDecoder = {
+        let d = JSONDecoder()
+        d.keyDecodingStrategy = .convertFromSnakeCase
+        return d
+    }()
+
     // Handles Only Get Request
-    func authorizedRequest<T: Codable> (session:URLSession = .shared,
-                                        _ endpoint: Endpoint,
-                                        type: T.Type) async throws -> T {
-        /*
-        // Read API key securely
-        guard let apiKey = KeychainHelper.read(key: Secrets.apiKeyIdentifier),
-              !apiKey.isEmpty else {
-            throw NetworkingError.custom(error: NSError( domain: "NetworkingManager",
-                                                         code: -1,
-                                                         userInfo: [NSLocalizedDescriptionKey: "Missing API key"] ))
+    @preconcurrency
+    func authorizedRequest<T: Codable> (_ endpoint: Endpoint) async throws -> T {
+        let request = try authorizedURLRequest(for: endpoint)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        try validate(response: response)
+        // Decode in background
+        return try await Task.detached(priority: .high) {
+            try await Self.decoder.decode(T.self, from: data)
+        }.value
+    }
 
-
-        }
-         */
-
+    private func authorizedURLRequest(for endpoint: Endpoint) throws -> URLRequest {
         guard let url = endpoint.url else {
-            throw NetworkingError.invalidUrl
+            throw NetworkingError.invalidURL
         }
+        return buildRequest(
+            url: url,
+            method:endpoint.methodType
+        )
+    }
 
-        /*
-        let request = buildRequest(from: url,
-                                   methodType: endpoint.methodType,
-                                   headers: [ "Content-Type": "application/json", "x-api-key": apiKey ])
-         */
+    private func validate(response: URLResponse) throws {
+        guard
+            let http = response as? HTTPURLResponse
+        else { throw NetworkingError.invalidResponse}
 
-        let request = buildRequest(from: url,
-                                   methodType: endpoint.methodType,
-                                   headers: ["Content-Type": "application/json"])
-
-        let (data , response) = try await session.data(
-            for: request)
-        guard let response = response as? HTTPURLResponse,
-              (200...300) ~= response.statusCode else {
-            let statusCode = (response as! HTTPURLResponse).statusCode
-            throw NetworkingError.invalidStatusCode(statusCode: statusCode)
+        guard(200..<300).contains(http.statusCode) else {
+            throw NetworkingError.invalidStatusCode(statusCode: http.statusCode)
         }
-
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let res = try decoder.decode(T.self, from: data)
-        return res
     }
 }
 
+private func buildRequest(url: URL,
+                          method: Endpoint.MethodType)  -> URLRequest {
+    var request = URLRequest(url: url)
+    switch  method {
+    case .get:
+        request.httpMethod = "GET"
+    }
+    return request
+}
 
+// MARK: - Errors
 extension NetworkingManager {
-    enum NetworkingError : LocalizedError {
-        case invalidUrl
-        case custom(error: Error)
+    enum NetworkingError: LocalizedError, Sendable {
+        case invalidURL
+        case invalidResponse
+        case missingAPIKey
         case invalidStatusCode(statusCode: Int)
         case invalidData
-        case failedToDecode(error: Error)
-    }
-}
+        case failedToDecode(error: any Error)
+        case custom(error: any Error)
 
-extension NetworkingManager.NetworkingError {
-    var errorDescription: String? {
-        switch self {
-        case .invalidUrl:
-            return "URL isn't valid"
-        case .custom(let err):
-            return "Something went wrong \(err.localizedDescription)"
-        case .invalidStatusCode:
-            return "Status code falls into wrong range"
-        case .invalidData:
-            return "Return data is invalid"
-        case .failedToDecode:
-            return "Failed to decode"
+        var errorDescription: String? {
+            switch self {
+            case .invalidURL:
+                "The URL is invalid"
+            case .invalidResponse:
+                "The server returned an unexpected response"
+            case .missingAPIKey:
+                "API key is missing from Keychain"
+            case .invalidStatusCode(let code):
+                "Unexpected status code: \(code)."
+            case .invalidData:
+                "The response data was invalid"
+            case .failedToDecode(let err):
+                "Decoding failed: \(err.localizedDescription)"
+            case .custom(let err):
+                "An error occured: \(err.localizedDescription)"
+            }
         }
     }
 }
-
-extension NetworkingManager {
-    func buildRequest(from url:URL,
-                      methodType:Endpoint.MethodType,
-                      headers: [String: String] = [:]) -> URLRequest {
-        var request = URLRequest(url: url)
-
-        switch methodType {
-        case .GET:
-            request.httpMethod = "GET"
-        case .POST(let data):
-            request.httpMethod = "POST"
-            request.httpBody = data
-        }
-        // Default Content-Type
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        /*
-        // Merge custom headers (e.g. x-api-key)
-        headers.forEach { key, value in
-            request.setValue(value, forHTTPHeaderField: key)
-        }
-        */
-
-        return request
-    }
-}
-
