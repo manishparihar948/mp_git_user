@@ -8,8 +8,16 @@
 import SwiftUI
 import SwiftData
 
+enum CurrentScreen {
+    case gitUser, favourite
+}
+
 @main
 struct MPGitUserShowCaseApp: App {
+    @State private var themeManager = ThemeManager()
+    @State private var currentScreen: CurrentScreen = .gitUser
+
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -25,8 +33,16 @@ struct MPGitUserShowCaseApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            switch currentScreen {
+            case .gitUser:
+                //ContentView()
+                //    .environment(themeManager)
+                // UserScreen(navigator: <#TabNavigator#>)
+                MainScreen()
+            case .favourite:
+                EmptyView()
+            }
         }
-        .modelContainer(sharedModelContainer)
+        //.modelContainer(sharedModelContainer)
     }
 }
