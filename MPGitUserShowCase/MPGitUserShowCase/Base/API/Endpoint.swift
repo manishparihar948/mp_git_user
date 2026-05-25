@@ -9,7 +9,7 @@ import Foundation
 
 enum Endpoint: Sendable {
     case users
-    case detailUser(id:Int)
+    case detailUser(id:String)
 }
 
 extension Endpoint {

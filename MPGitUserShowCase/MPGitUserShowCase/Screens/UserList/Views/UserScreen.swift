@@ -25,6 +25,8 @@ struct UserScreen: View {
 
         NavigationStack(path: $nav.path) {
             ZStack {
+                background
+
                 if vm.isLoading {
                     loadingView
                 } else {
@@ -32,6 +34,9 @@ struct UserScreen: View {
                 }
             }
             .navigationTitle("Git User Profile")
+            .toolbarColorScheme(.dark, for: .navigationBar)   // ← white title/icons on dark bg
+            .toolbarBackground(Color("141e30"), for: .navigationBar)
+                    .toolbarBackground(.visible, for: .navigationBar)
             .task {
                 await vm.fetchGitUsersList()
             }
@@ -52,32 +57,47 @@ struct UserScreen: View {
 // Extension
 private extension UserScreen {
 
+    var background: some View {
+        LinearGradient(
+            colors: [.oceanDeep, .oceanMid],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )        .ignoresSafeArea()
+    }
+
+    @ViewBuilder
     var loadingView: some View {
         VStack {
             Spacer()
             ProgressView("Loading users...")
                 .progressViewStyle(.circular)
+                .tint(.white)
+                .foregroundStyle(.white)
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    @ViewBuilder
     var galleryGridView: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(vm.usersObject) { usrObj in
-                    UserItemView(usrObj: usrObj)
+                    NavigationLink {
+                        DetailUserScreen(userId: usrObj.login)
+                    } label: {
+                        UserItemView(usrObj: usrObj)
+                    }
+                    .buttonStyle(.plain)    // ← removes NavigationLink blue tint on cells
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
         }
         .overlay(alignment: .bottom) {
             if vm.isFetching {
-                ProgressView()
+                ProgressView().tint(.white)
             }
         }
-        //.navigationDestination(for: Users.self) { objImg in
-        // To Do - User Detail View Screen
-        //    EmptyView()
-        //}
     }
 }

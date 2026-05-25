@@ -17,7 +17,7 @@ struct GradientView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [color.opacity(0.7), color],
+                        colors: [.oceanDeep, .oceanMid],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
