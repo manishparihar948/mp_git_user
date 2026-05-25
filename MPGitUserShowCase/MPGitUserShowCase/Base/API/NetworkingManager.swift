@@ -30,10 +30,12 @@ final class NetworkingManager: NetworkingManagerImpl, Sendable {
         let request = try authorizedURLRequest(for: endpoint)
         let (data, response) = try await URLSession.shared.data(for: request)
         try validate(response: response)
-        // Decode in background
-        return try await Task.detached(priority: .high) {
-            try await Self.decoder.decode(T.self, from: data)
-        }.value
+
+        do {
+            return try Self.decoder.decode(T.self, from: data)
+        } catch {
+            throw NetworkingError.failedToDecode(error: error)
+        }
     }
 
     private func authorizedURLRequest(for endpoint: Endpoint) throws -> URLRequest {
