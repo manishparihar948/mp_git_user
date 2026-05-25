@@ -21,7 +21,7 @@ struct UserItemView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(usrObj.login)
                     .foregroundStyle(.primary)
-                    .font(.system(.body, design: .rounded))
+                    .font(.system(.subheadline, design: .rounded))
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -39,14 +39,11 @@ struct UserItemView: View {
         // Step 1: Build URL explicitly and log it
         let resolvedURL: URL? = {
             guard let raw = usrObj.avatarUrl, !raw.isEmpty else {
-                // print("⚠️ avatarURL is nil/empty for \(usrObj.login)")
                 return nil
             }
             guard let url = URL(string: raw) else {
-                // print("⚠️ Invalid URL string for \(usrObj.login): \(raw)")
                 return nil
             }
-            // print("✅ Loading avatar for \(usrObj.login): \(url)")
             return url
         }()
 

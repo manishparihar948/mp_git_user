@@ -12,8 +12,7 @@ struct UserScreen: View {
     var navigator: TabNavigator
     var vm: UserViewModel
 
-    private let columns =  Array(repeating: GridItem(.flexible(), spacing:12),count: 2)
-
+    private let columns =  Array(repeating: GridItem(.flexible()),count: 2)
 
     init(navigator: TabNavigator, vm: UserViewModel) {
         self.navigator = navigator
@@ -68,16 +67,6 @@ private extension UserScreen {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(vm.usersObject) { usrObj in
                     UserItemView(usrObj: usrObj)
-                        .onTapGesture {
-                            print("Tapped: \(usrObj.login)")
-                        }
-                    /*
-                    NavigationLink {
-                        EmptyView()
-                    } label: {
-                        UserItemView(user: usrObj)
-                    }
-                     */
                 }
             }
         }
