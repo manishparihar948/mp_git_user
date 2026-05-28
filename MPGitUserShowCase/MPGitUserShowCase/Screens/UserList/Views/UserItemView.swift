@@ -25,10 +25,10 @@ struct UserItemView: View {
             HStack(spacing:8) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(usrObj.login)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Theme.text)
                         .font(
                             .system(
-                                .subheadline,
+                                .headline,
                                 design: .rounded,
                                 weight: .semibold
                             )
@@ -36,16 +36,12 @@ struct UserItemView: View {
                         .lineLimit(1)
 
                     Text("@\(usrObj.login)")
-                        .foregroundStyle(.secondary)
-                        .font(.system(.caption2, design: .rounded))
+                        .foregroundStyle(Theme.secondaryText)
+                        .font(.system(.caption, design: .rounded))
                         .lineLimit(1)
                 }
 
                 Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.tertiary)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
@@ -76,7 +72,7 @@ struct UserItemView: View {
             .padding(.vertical, 3)
             .background(
                 Capsule()
-                    .fill(Color("141e30").opacity(0.75))
+                    .fill(Color(.green).opacity(0.75))
                     .overlay {
                         Capsule()
                             .stroke(.white.opacity(0.2), lineWidth: 0.5)

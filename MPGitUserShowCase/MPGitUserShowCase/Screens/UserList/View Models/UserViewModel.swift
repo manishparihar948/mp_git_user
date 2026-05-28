@@ -33,10 +33,13 @@ final class UserViewModel {
             let response : [Users] = try await networkingManager.authorizedRequest(.users)
             self.usersObject = response
 
+            /*
             // Temporary debug
             response.prefix(3).forEach {
                 print("👤 \($0.login) → avatarURL: \($0.avatarUrl ?? "NIL")")
             }
+            */
+            
         } catch {
             hasError = true
             self.error = error as? NetworkingManager.NetworkingError ??
