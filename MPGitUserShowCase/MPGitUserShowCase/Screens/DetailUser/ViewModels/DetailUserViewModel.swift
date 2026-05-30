@@ -30,7 +30,11 @@ final class DetailUserViewModel {
 
         do {
             detailUserObject = try await networkingManager
-                .authorizedRequest(.detailUser(id: id))
+                .authorizedRequest(
+                    session: .shared,
+                    .detailUser(id: id),
+                    type: DetailUserResponse.self
+                )
 
         } catch  {
             hasError = true

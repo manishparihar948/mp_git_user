@@ -30,7 +30,10 @@ final class UserViewModel {
         defer { loadPhase = .idle }
 
         do {
-            let response : [Users] = try await networkingManager.authorizedRequest(.users)
+            let response = try await networkingManager.authorizedRequest(
+                session: .shared,
+                .users, type: [Users].self
+            )
             self.usersObject = response
 
             /*
