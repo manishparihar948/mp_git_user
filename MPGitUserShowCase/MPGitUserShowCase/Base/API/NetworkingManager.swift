@@ -9,12 +9,17 @@ import Foundation
 
 @preconcurrency
 protocol NetworkingManagerImpl: Sendable {
-    func authorizedRequest<T: Codable> (_ endpoint: Endpoint) async throws -> T
+    func authorizedRequest<T: Codable> (session:URLSession,
+                                        _ endpoint: Endpoint,
+                                        type: T.Type) async throws -> T
+
+    func authorizedRequest(session: URLSession,
+                           _ endpoint: Endpoint) async throws
 }
 
 final class NetworkingManager: NetworkingManagerImpl, Sendable {
 
-    nonisolated static let shared = NetworkingManager()
+    static let shared = NetworkingManager()
 
     private init() {}
 
@@ -26,9 +31,11 @@ final class NetworkingManager: NetworkingManagerImpl, Sendable {
 
     // Handles Only Get Request
     @preconcurrency
-    func authorizedRequest<T: Codable> (_ endpoint: Endpoint) async throws -> T {
+    func authorizedRequest<T: Codable> (session: URLSession = .shared,
+                                        _ endpoint: Endpoint,
+                                        type: T.Type) async throws -> T {
         let request = try authorizedURLRequest(for: endpoint)
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await session.data(for: request)
         try validate(response: response)
 
         do {
@@ -37,6 +44,16 @@ final class NetworkingManager: NetworkingManagerImpl, Sendable {
             throw NetworkingError.failedToDecode(error: error)
         }
     }
+
+    func authorizedRequest(session: URLSession = .shared,
+                 _ endpoint: Endpoint) async throws {
+
+        let request = try authorizedURLRequest(for: endpoint)
+        let (_, response) = try await session.data(for: request)
+        try validate(response: response)
+
+    }
+
 
     private func authorizedURLRequest(for endpoint: Endpoint) throws -> URLRequest {
         guard let url = endpoint.url else {
@@ -97,6 +114,29 @@ extension NetworkingManager {
             case .custom(let err):
                 "An error occured: \(err.localizedDescription)"
             }
+        }
+    }
+}
+
+extension NetworkingManager.NetworkingError: Equatable {
+    static func == (lhs: NetworkingManager.NetworkingError, rhs: NetworkingManager.NetworkingError) -> Bool {
+        switch(lhs, rhs) {
+        case (.invalidURL, .invalidURL):
+            return true
+        case (.invalidResponse, .invalidResponse):
+            return true
+        case (.missingAPIKey, .missingAPIKey):
+            return true
+        case (.invalidStatusCode(let lhsType), .invalidStatusCode(let rhsType)):
+            return lhsType == rhsType
+        case (.invalidData, .invalidData):
+            return true
+        case (.failedToDecode(let lhsType), .failedToDecode(let rhsType)):
+            return lhsType.localizedDescription == rhsType.localizedDescription
+        case (.custom(let lhsType), .custom(let rhsType)):
+            return lhsType.localizedDescription == rhsType.localizedDescription
+        default:
+            return false
         }
     }
 }
