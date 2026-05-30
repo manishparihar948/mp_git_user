@@ -17,6 +17,8 @@ protocol NetworkingManagerImpl: Sendable {
                            _ endpoint: Endpoint) async throws
 }
 
+@MainActor
+
 final class NetworkingManager: NetworkingManagerImpl, Sendable {
 
     static let shared = NetworkingManager()
