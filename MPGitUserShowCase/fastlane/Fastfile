@@ -25,7 +25,7 @@ platform :ios do
   lane :simulator_test do
     run_tests(
       scheme: "MPGitUserShowCase",
-      devices: ["iPhone 15"],   # safer default simulator name for CircleCI
+      devices: ["iPhone 17 Pro"],   # safer default simulator name for CircleCI
       clean: true,
       reset_simulator: true,
       output_directory: "./fastlane/test_output",
