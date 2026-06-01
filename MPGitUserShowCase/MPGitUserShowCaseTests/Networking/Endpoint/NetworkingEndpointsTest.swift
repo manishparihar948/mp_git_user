@@ -11,6 +11,7 @@ import XCTest
 final class NetworkingEndpointsTest: XCTestCase {
 
     // https://api.github.com/users
+    @MainActor
     func test_with_user_list_endpoint_request_is_valid() {
         let endpoint = Endpoint.users
         XCTAssertEqual(endpoint.host, "api.github.com", "The host should be api.github.com")
@@ -19,6 +20,7 @@ final class NetworkingEndpointsTest: XCTestCase {
         XCTAssertEqual(endpoint.url?.absoluteString, "https://api.github.com/users", "The generated url should match our endpoint url")
     }
 
+    @MainActor
     func test_with_detail_user_request_is_valid() {
         let userId = "mojombo"
         let endpoint = Endpoint.detailUser(id: userId)

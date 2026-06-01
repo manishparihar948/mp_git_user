@@ -28,6 +28,8 @@ platform :ios do
       devices: ["iPhone 17 Pro"],   # safer default simulator name for CircleCI
       clean: true,
       reset_simulator: true,
+      reinstall_app: true,          # ✅ forces app reinstall
+      disable_concurrent_testing: true,
       output_directory: "./fastlane/test_output",
       output_types: "html,junit"
     )
