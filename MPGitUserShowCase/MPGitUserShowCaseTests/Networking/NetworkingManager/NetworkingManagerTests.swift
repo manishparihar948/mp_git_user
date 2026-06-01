@@ -50,10 +50,9 @@ final class NetworkingManagerTests: XCTestCase {
             return  (response!, data)
         }
 
-        let res = try await NetworkingManager.shared.authorizedRequest(
+        let res:[Users] = try await NetworkingManager.shared.authorizedRequest(
             session: session,
-            .users,
-            type: [Users].self
+            .users
         )
 
         let staticJSON = try await StaticJSONMapper.decode(
@@ -96,11 +95,10 @@ final class NetworkingManagerTests: XCTestCase {
 
         // Act & Assert
         do {
-            _ = try await NetworkingManager.shared
+            let res:[Users] = try await NetworkingManager.shared
                 .authorizedRequest(
                     session: session,
-                    .users,
-                    type: [Users].self
+                    .users
                 )
             XCTFail("Expected NetworkingManager.NetworkingError.invalidStatusCode but got success")
         } catch  {

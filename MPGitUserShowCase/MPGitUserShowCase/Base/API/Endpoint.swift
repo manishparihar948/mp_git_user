@@ -34,7 +34,7 @@ extension Endpoint {
         switch self {
         case .users:
              .get
-        case .detailUser(let data):
+        case .detailUser(_):
              .get
         }
     }

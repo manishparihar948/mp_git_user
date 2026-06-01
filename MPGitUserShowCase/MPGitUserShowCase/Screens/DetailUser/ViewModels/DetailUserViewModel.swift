@@ -7,7 +7,6 @@
 
 import Foundation
 
-@MainActor
 @Observable
 final class DetailUserViewModel {
     private(set) var detailUserObject: DetailUserResponse?
@@ -18,12 +17,13 @@ final class DetailUserViewModel {
     var isLoading : Bool { loadPhase == .loading }
     var isFetching : Bool { loadPhase == .fetching }
 
-    private let  networkingManager : any NetworkingManagerImpl
+    private let networkingManager : NetworkingManagerImpl!
 
-    init(networkingManager: any NetworkingManagerImpl = NetworkingManager.shared) {
+    init(networkingManager: NetworkingManagerImpl = NetworkingManager.shared) {
         self.networkingManager = networkingManager
     }
 
+    @MainActor
     func fetchUserDetails(for id: String) async {
         loadPhase = .loading
         defer { loadPhase = .idle}
@@ -32,14 +32,12 @@ final class DetailUserViewModel {
             detailUserObject = try await networkingManager
                 .authorizedRequest(
                     session: .shared,
-                    .detailUser(id: id),
-                    type: DetailUserResponse.self
-                )
-
+                    .detailUser(id: id)
+            )
         } catch  {
             hasError = true
             self.error = error as? NetworkingManager.NetworkingError ??
-                .custom(error: error)
+                .custom(error: error.localizedDescription)
         }
     }
 }

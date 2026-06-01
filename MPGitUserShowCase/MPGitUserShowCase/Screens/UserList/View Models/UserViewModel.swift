@@ -7,7 +7,7 @@
 
 import Foundation
 
-@MainActor
+
 @Observable
 final class UserViewModel {
     private(set) var usersObject: [Users] = []
@@ -18,35 +18,28 @@ final class UserViewModel {
     var isLoading : Bool { loadPhase == .loading }
     var isFetching : Bool { loadPhase == .fetching }
 
-    private let  networkingManager : any NetworkingManagerImpl
+    private let  networkingManager : NetworkingManagerImpl!
 
-    init(networkingManager: any NetworkingManagerImpl = NetworkingManager.shared) {
+    init(networkingManager: NetworkingManagerImpl = NetworkingManager.shared) {
         self.networkingManager = networkingManager
     }
 
+    @MainActor
     func fetchGitUsersList() async {
         reset()
         loadPhase = .loading
         defer { loadPhase = .idle }
 
         do {
-            let response = try await networkingManager.authorizedRequest(
+            let response : [Users] = try await networkingManager.authorizedRequest(
                 session: .shared,
-                .users, type: [Users].self
-            )
+                .users)
             self.usersObject = response
-
-            /*
-            // Temporary debug
-            response.prefix(3).forEach {
-                print("👤 \($0.login) → avatarURL: \($0.avatarUrl ?? "NIL")")
-            }
-            */
             
         } catch {
             hasError = true
             self.error = error as? NetworkingManager.NetworkingError ??
-                .custom(error: error)
+                .custom(error: error.localizedDescription)
         }
     }
 

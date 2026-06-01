@@ -7,19 +7,24 @@
 
 import Foundation
 
-@preconcurrency
-protocol NetworkingManagerImpl: Sendable {
-    func authorizedRequest<T: Codable> (session:URLSession,
-                                        _ endpoint: Endpoint,
-                                        type: T.Type) async throws -> T
+/**
+ @preconcurrency - It's mainly used to tell the compiler:
+ "This API was created before Swift's concurrency system existed, so don't enforce all modern concurrency checks on it."
+ Use it when:
+ - Importing older SDKs that generate concurrency warnings.
+ - Conforming to legacy protocols that aren't fully concurrency-annotated.
+ - Migrating a large codebase to Swift 6.
+ */
+// @preconcurrency
+protocol NetworkingManagerImpl {
+    func authorizedRequest<T: Codable> (session: URLSession,
+                                        _ endpoint: Endpoint) async throws -> T
 
     func authorizedRequest(session: URLSession,
                            _ endpoint: Endpoint) async throws
 }
 
-@MainActor
-
-final class NetworkingManager: NetworkingManagerImpl, Sendable {
+final class NetworkingManager: NetworkingManagerImpl {
 
     static let shared = NetworkingManager()
 
@@ -32,10 +37,8 @@ final class NetworkingManager: NetworkingManagerImpl, Sendable {
     }()
 
     // Handles Only Get Request
-    @preconcurrency
     func authorizedRequest<T: Codable> (session: URLSession = .shared,
-                                        _ endpoint: Endpoint,
-                                        type: T.Type) async throws -> T {
+                                        _ endpoint: Endpoint) async throws -> T {
         let request = try authorizedURLRequest(for: endpoint)
         let (data, response) = try await session.data(for: request)
         try validate(response: response)
@@ -43,7 +46,8 @@ final class NetworkingManager: NetworkingManagerImpl, Sendable {
         do {
             return try Self.decoder.decode(T.self, from: data)
         } catch {
-            throw NetworkingError.failedToDecode(error: error)
+            throw NetworkingError
+                .failedToDecode(error:error.localizedDescription)
         }
     }
 
@@ -90,14 +94,14 @@ private func buildRequest(url: URL,
 
 // MARK: - Errors
 extension NetworkingManager {
-    enum NetworkingError: LocalizedError, Sendable {
+    enum NetworkingError: LocalizedError, Equatable{
         case invalidURL
         case invalidResponse
         case missingAPIKey
         case invalidStatusCode(statusCode: Int)
         case invalidData
-        case failedToDecode(error: any Error)
-        case custom(error: any Error)
+        case failedToDecode(error: String)
+        case custom(error: String)
 
         var errorDescription: String? {
             switch self {
@@ -112,14 +116,15 @@ extension NetworkingManager {
             case .invalidData:
                 "The response data was invalid"
             case .failedToDecode(let err):
-                "Decoding failed: \(err.localizedDescription)"
+                "Decoding failed: \(err)"
             case .custom(let err):
-                "An error occured: \(err.localizedDescription)"
+                "An error occured: \(err)"
             }
         }
     }
 }
 
+/*
 extension NetworkingManager.NetworkingError: Equatable {
     static func == (lhs: NetworkingManager.NetworkingError, rhs: NetworkingManager.NetworkingError) -> Bool {
         switch(lhs, rhs) {
@@ -142,3 +147,4 @@ extension NetworkingManager.NetworkingError: Equatable {
         }
     }
 }
+*/
