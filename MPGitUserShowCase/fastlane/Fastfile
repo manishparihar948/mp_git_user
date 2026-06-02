@@ -11,7 +11,8 @@ platform :ios do
     run_tests(
       scheme: "MPGitUserShowCase",   # must match your Xcode scheme name
       # destination: "platform=iOS Simulator,id=7B154B5A-0CA4-4F0E-A3D4-760E4F38B2F3",  # iPhone 17 iOS 26.3.1
-      destination: "platform=iOS Simulator,name=iPhone 17 Pro", # use name instead of UUID
+      destination: "platform=iOS Simulator,name=iPho
+      ne 17 Pro", # use name instead of UUID
       skip_testing: "MPGitUserShowCaseUITests",
       clean: true,         # optional - ensures a fresh build
       prelaunch_simulator: true, # Launch simulator befor tests
@@ -24,22 +25,49 @@ platform :ios do
     )
   end
 
-  desc "Run tests on simulator (CircleCI lane)"
+  desc "Run unit tests on simulator (CircleCI lane)"
   lane :simulator_test do
     run_tests(
       scheme: "MPGitUserShowCase",
       app_identifier:"com.manishparihar.MPGitUserShowCase",
       devices: ["iPhone 17 Pro"],   # matches available simulator in CircleCI logs
+      skip_testing: "MPGitUserShowCaseUITests",  # skip UI tests - simulator clone crash (NSMachError -308)
       clean: true,
       reset_simulator: true,
       reinstall_app: true,          # forces app reinstall
-      disable_concurrent_testing: true,
+      force_quit_simulator: true,                # kill stale simulator before run
+      prelaunch_simulator: true,                 # pre-boot before xcodebuild
+      disable_concurrent_testing: true,          # no parallel simulator clones
+      number_of_retries: 2,                      # retry on flaky simulator failures
       output_directory: "./fastlane/test_output",
       output_types: "html,junit",
       fail_build: true,             # fail fast in CI
       skip_build: false,            # always build before tests
       skip_detect_devices: true,    # prevents scan from prompting
       ensure_devices_found: false   # avoids interactive confirmation
+    )
+  end
+
+  desc "Run UI tests on simulator (CircleCI lane) - requires pre-booted simulator"
+  lane :ui_test do
+    run_tests(
+      scheme: "MPGitUserShowCase",
+      app_identifier: "com.manishparihar.MPGitUserShowCase",
+      devices: ["iPhone 17 Pro"],
+      only_testing: "MPGitUserShowCaseUITests",  # only UI tests
+      clean: false,                              # skip clean - reuse build from simulator_test
+      reset_simulator: true,
+      reinstall_app: true,
+      force_quit_simulator: true,
+      prelaunch_simulator: true,
+      disable_concurrent_testing: true,
+      number_of_retries: 2,
+      output_directory: "./fastlane/test_output/ui",
+      output_types: "html,junit",
+      fail_build: true,
+      skip_build: false,
+      skip_detect_devices: true,
+      ensure_devices_found: false
     )
   end
 
@@ -59,9 +87,16 @@ platform :ios do
     gym(export_method: "ad-hoc")
   end
 
-  desc "Run tests and then build (CI lane)"
+  desc "Run unit tests and then build (CircleCI main CI lane)"
   lane :ci do
     simulator_test
+    build
+  end
+
+  desc "Run all tests then build (unit + UI + build)"
+  lane :ci_full do
+    simulator_test   # unit tests
+    ui_test          # UI tests (needs pre-booted simulator in CI config)
     build
   end
 end
