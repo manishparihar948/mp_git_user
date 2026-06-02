@@ -31,12 +31,14 @@ platform :ios do
       devices: ["iPhone 17 Pro"],   # matches available simulator in CircleCI logs
       clean: true,
       reset_simulator: true,
-      reinstall_app: true,          # ✅ forces app reinstall
+      reinstall_app: true,          # forces app reinstall
       disable_concurrent_testing: true,
       output_directory: "./fastlane/test_output",
       output_types: "html,junit",
-      fail_build: true,             # ✅ fail fast in CI
-      skip_build: false             # ✅ always build before tests
+      fail_build: true,             # fail fast in CI
+      skip_build: false,            # always build before tests
+      skip_detect_devices: true,    # prevents scan from prompting
+      ensure_devices_found: false   # avoids interactive confirmation
     )
   end
 
@@ -52,7 +54,7 @@ platform :ios do
 
   desc "Ad-hoc build"
   lane :adhoc do
-    match(type: "adhoc", readonly: true, skip_confirmation: true)
+    match(type: "adhoc", readonly: true, skip_confirmation: true) # avoid interactive prompts
     gym(export_method: "ad-hoc")
   end
 
