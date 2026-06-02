@@ -11,12 +11,12 @@ import Foundation
 @Observable
 final class UserViewModel {
     private(set) var usersObject: [Users] = []
-    private(set) var loadPhase: LoadPhase = .idle
+    private(set) var viewState: ViewState?
     private(set) var error: NetworkingManager.NetworkingError?
     var hasError = false
 
-    var isLoading : Bool { loadPhase == .loading }
-    var isFetching : Bool { loadPhase == .fetching }
+    var isLoading : Bool { viewState == .loading }
+    var isFetching : Bool { viewState == .feching }
 
     private let  networkingManager : NetworkingManagerImpl!
 
@@ -27,15 +27,14 @@ final class UserViewModel {
     @MainActor
     func fetchGitUsersList() async {
         reset()
-        loadPhase = .loading
-        defer { loadPhase = .idle }
+        viewState = .loading
+        defer { viewState = .finished }
 
         do {
             let response : [Users] = try await networkingManager.authorizedRequest(
                 session: .shared,
                 .users)
             self.usersObject = response
-            
         } catch {
             hasError = true
             self.error = error as? NetworkingManager.NetworkingError ??
@@ -44,18 +43,18 @@ final class UserViewModel {
     }
 
     private func reset() {
-        usersObject.removeAll()
-        error = nil
-        hasError = false
-        loadPhase = .idle
+        if viewState == .finished {
+            usersObject.removeAll()
+            error = nil
+            viewState = nil
+        }
     }
-
 }
 
 extension UserViewModel {
-    enum LoadPhase: Equatable {
-        case idle
+    enum ViewState: Equatable {
+        case feching
         case loading
-        case fetching
+        case finished
     }
 }
