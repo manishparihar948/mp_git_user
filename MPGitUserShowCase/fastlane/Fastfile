@@ -28,6 +28,7 @@ platform :ios do
   lane :simulator_test do
     run_tests(
       scheme: "MPGitUserShowCase",
+      app_identifier:"com.manishparihar.MPGitUserShowCase",
       devices: ["iPhone 17 Pro"],   # matches available simulator in CircleCI logs
       clean: true,
       reset_simulator: true,
