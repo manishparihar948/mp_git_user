@@ -14,6 +14,8 @@ enum CurrentScreen {
 
 @main
 struct MPGitUserShowCaseApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     @State private var themeManager = ThemeManager()
     @State private var currentScreen: CurrentScreen = .gitUser
 
@@ -44,5 +46,16 @@ struct MPGitUserShowCaseApp: App {
             }
         }
         //.modelContainer(sharedModelContainer)
+    }
+}
+
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        #if DEBUG
+        print("👷🏾‍♂️ Is UI Test Running: \(UITestingHelper.isUITesting)")
+        #endif
+        return true
     }
 }

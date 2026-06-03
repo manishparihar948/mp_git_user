@@ -29,9 +29,34 @@
 		CD39323E2FBD73880097067A /* MPGitUserShowCaseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MPGitUserShowCaseUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CDC9D8892FD00C77000978DB /* Exceptions for "MPGitUserShowCase" folder in "MPGitUserShowCase" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Mocks/MockUrlSessionProtocol.swift,
+				Mocks/UserDetailMock/NetworkManagerUserDetailsResponseFailureMock.swift,
+				Mocks/UserDetailMock/NetworkManagerUserDetailsResponseSuccessMock.swift,
+			);
+			target = CD3932242FBD73810097067A /* MPGitUserShowCase */;
+		};
+		CDC9D88A2FD00C77000978DB /* Exceptions for "MPGitUserShowCase" folder in "MPGitUserShowCaseTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Mocks/MockUrlSessionProtocol.swift,
+				Mocks/UserDetailMock/NetworkManagerUserDetailsResponseFailureMock.swift,
+				Mocks/UserDetailMock/NetworkManagerUserDetailsResponseSuccessMock.swift,
+			);
+			target = CD3932332FBD73880097067A /* MPGitUserShowCaseTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CD3932272FBD73810097067A /* MPGitUserShowCase */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CDC9D8892FD00C77000978DB /* Exceptions for "MPGitUserShowCase" folder in "MPGitUserShowCase" target */,
+				CDC9D88A2FD00C77000978DB /* Exceptions for "MPGitUserShowCase" folder in "MPGitUserShowCaseTests" target */,
+			);
 			path = MPGitUserShowCase;
 			sourceTree = "<group>";
 		};
@@ -183,6 +208,7 @@
 					};
 					CD39323D2FBD73880097067A = {
 						CreatedOnToolsVersion = 26.3;
+						LastSwiftMigration = 2630;
 						TestTargetID = CD3932242FBD73810097067A;
 					};
 				};
@@ -526,6 +552,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JKR3XZ5TBQ;
@@ -541,6 +568,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -553,6 +581,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JKR3XZ5TBQ;

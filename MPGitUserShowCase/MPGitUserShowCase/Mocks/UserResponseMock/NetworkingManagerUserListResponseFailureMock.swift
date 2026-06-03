@@ -7,7 +7,7 @@
 
 #if DEBUG
 import Foundation
-@testable import MPGitUserShowCase
+//@testable import MPGitUserShowCase
 
 class NetworkingManagerUserListResponseFailureMock: NetworkingManagerImpl {
     func authorizedRequest<T>(session: URLSession, _ endpoint: Endpoint) async throws -> T where T : Decodable, T : Encodable {

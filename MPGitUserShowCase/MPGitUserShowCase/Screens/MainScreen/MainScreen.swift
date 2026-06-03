@@ -11,7 +11,17 @@ struct MainScreen: View {
     @State private var coordinator = MainCoordinator()
     @State private var userListsNavigator = TabNavigator()
     @State private var settingsNavigator = TabNavigator()
-    @State private var userViewModel = UserViewModel()
+    @State private var userViewModel : UserViewModel = {
+#if DEBUG
+        if UITestingHelper.isUITesting {
+            let mock: NetworkingManagerImpl = UITestingHelper.isUserListNetworkingSuccessful
+                ? NetworkingManagerUserResponseSuccessMock()
+                : NetworkingManagerUserListResponseFailureMock()
+            return UserViewModel(networkingManager: mock)
+        }
+#endif
+        return UserViewModel()
+    }()
 
     var body: some View {
         @Bindable var coordinator = coordinator

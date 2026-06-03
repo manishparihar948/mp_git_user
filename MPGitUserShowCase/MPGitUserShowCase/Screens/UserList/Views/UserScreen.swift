@@ -14,6 +14,7 @@ struct UserScreen: View {
 
     private let columns =  Array(repeating: GridItem(.flexible()),count: 2)
 
+
     init(navigator: TabNavigator, vm: UserViewModel) {
         self.navigator = navigator
         self.vm = vm
@@ -87,12 +88,14 @@ private extension UserScreen {
                         DetailUserScreen(userId: usrObj.login)
                     } label: {
                         UserItemView(usrObj: usrObj)
+                            .accessibilityIdentifier("item_\(usrObj.id)")
                     }
                     .buttonStyle(.plain)    // ← removes NavigationLink blue tint on cells
                 }
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
+            .accessibilityIdentifier("userGrid")
         }
         .overlay(alignment: .bottom) {
             if vm.isFetching {
