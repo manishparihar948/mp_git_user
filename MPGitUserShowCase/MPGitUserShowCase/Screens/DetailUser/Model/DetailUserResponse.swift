@@ -9,7 +9,7 @@ import Foundation
 
 // https://api.github.com/users/%7bUSER_ID
 
-struct DetailUserResponse: Codable, Identifiable, Sendable {
+struct DetailUserResponse: Codable, Identifiable, Sendable, Equatable {
 
     let login: String
     let id: Int
@@ -28,7 +28,7 @@ struct DetailUserResponse: Codable, Identifiable, Sendable {
     let eventsUrl: String
     let receivedEventsUrl: String
     let type: String
-    let userViewType: String
+    let userViewType: String?
     let siteAdmin: Bool
 
     let name: String?

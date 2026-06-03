@@ -10,12 +10,9 @@ import Foundation
 @Observable
 final class DetailUserViewModel {
     private(set) var detailUserObject: DetailUserResponse?
-    private(set) var loadPhase: LoadPhase = .idle
+    private(set) var isLoading = false
     private(set) var error: NetworkingManager.NetworkingError?
     var hasError = false
-
-    var isLoading : Bool { loadPhase == .loading }
-    var isFetching : Bool { loadPhase == .fetching }
 
     private let networkingManager : NetworkingManagerImpl!
 
@@ -25,8 +22,8 @@ final class DetailUserViewModel {
 
     @MainActor
     func fetchUserDetails(for id: String) async {
-        loadPhase = .loading
-        defer { loadPhase = .idle}
+        isLoading = true
+        defer { isLoading = false}
 
         do {
             detailUserObject = try await networkingManager
@@ -39,14 +36,5 @@ final class DetailUserViewModel {
             self.error = error as? NetworkingManager.NetworkingError ??
                 .custom(error: error.localizedDescription)
         }
-    }
-}
-
-
-extension DetailUserViewModel {
-    enum LoadPhase: Equatable {
-        case idle
-        case loading
-        case fetching
     }
 }
