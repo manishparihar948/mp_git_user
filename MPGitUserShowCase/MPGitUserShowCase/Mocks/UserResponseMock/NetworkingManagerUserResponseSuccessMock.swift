@@ -7,7 +7,7 @@
 
 #if DEBUG
 import Foundation
-@testable import MPGitUserShowCase
+// @testable import MPGitUserShowCase
 
 class NetworkingManagerUserResponseSuccessMock: NetworkingManagerImpl {
 
